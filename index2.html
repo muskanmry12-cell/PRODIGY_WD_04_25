@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Stopwatch</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4);
+        background-size: 400% 400%;
+        animation: gradientMove 10s ease infinite;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    @keyframes gradientMove {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .container {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 30px;
+        border-radius: 20px;
+        width: 320px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        animation: fadeIn 1s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    h1 {
+        margin-bottom: 15px;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .time {
+        font-size: 2.5rem;
+        margin: 15px 0;
+        font-weight: bold;
+        color: #ffe57f;
+        text-shadow: 0px 0px 6px rgba(0,0,0,0.4);
+        animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    .buttons button {
+        border: none;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: 50px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .start { background: #4caf50; }
+    .pause { background: #ff9800; }
+    .reset { background: #f44336; }
+    .lap { background: #2196f3; }
+    .buttons button:hover {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+    ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 15px;
+        max-height: 120px;
+        overflow-y: auto;
+    }
+    li {
+        background: rgba(255, 255, 255, 0.2);
+        margin: 4px 0;
+        padding: 6px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⏱ Dynamic Stopwatch</h1>
+    <div class="time" id="display">00:00:00.000</div>
+    <div class="buttons">
+        <button class="start" onclick="start()">Start</button>
+        <button class="pause" onclick="pause()">Pause</button>
+        <button class="reset" onclick="reset()">Reset</button>
+        <button class="lap" onclick="lap()">Lap</button>
+    </div>
+    <ul id="laps"></ul>
+</div>
+
+<script>
+let timer;
+let isRunning = false;
+let milliseconds = 0, seconds = 0, minutes = 0, hours = 0;
+
+function updateDisplay() {
+    let h = hours.toString().padStart(2, "0");
+    let m = minutes.toString().padStart(2, "0");
+    let s = seconds.toString().padStart(2, "0");
+    let ms = milliseconds.toString().padStart(3, "0");
+    document.getElementById("display").innerText = `${h}:${m}:${s}.${ms}`;
+}
+
+function start() {
+    if (!isRunning) {
+        timer = setInterval(() => {
+            milliseconds += 10;
+            if (milliseconds >= 1000) {
+                milliseconds = 0;
+                seconds++;
+            }
+            if (seconds >= 60) {
+                seconds = 0;
+                minutes++;
+            }
+            if (minutes >= 60) {
+                minutes = 0;
+                hours++;
+            }
+            updateDisplay();
+        }, 10); // Updates every 10ms for smoothness
+        isRunning = true;
+    }
+}
+
+function pause() {
+    clearInterval(timer);
+    isRunning = false;
+}
+
+function reset() {
+    clearInterval(timer);
+    isRunning = false;
+    milliseconds = seconds = minutes = hours = 0;
+    updateDisplay();
+    document.getElementById("laps").innerHTML = "";
+}
+
+function lap() {
+    if (isRunning) {
+        let lapTime = document.getElementById("display").innerText;
+        let li = document.createElement("li");
+        li.textContent = `Lap: ${lapTime}`;
+        document.getElementById("laps").appendChild(li);
+    }
+}
+</script>
+
+</body>
+</html>
